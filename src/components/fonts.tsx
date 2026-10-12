@@ -19,7 +19,7 @@ export function FontProvider({ children }: { children: ReactNode }) {
   if (!loaded && !error) {
     return (
       <View style={styles.loading}>
-        <Text style={styles.kicker}>SEQUENCE</Text>
+        <Text style={styles.kicker}>ORDERED</Text>
         <Text style={styles.title}>Setting the type</Text>
         <Text style={styles.body}>Loading the text used on the cards.</Text>
       </View>

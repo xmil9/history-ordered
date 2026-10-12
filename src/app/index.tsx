@@ -25,8 +25,8 @@ export default function HomeScreen() {
     <PhoneFrame>
       <ScrollView contentContainerStyle={{ paddingBottom: insets.bottom + 32 }}>
         <View style={[styles.mast, { paddingTop: insets.top + 18 }]}>
-          <Text style={[styles.mark, { fontFamily: fonts.semibold }]}>SEQ</Text>
-          <Text style={[styles.title, { fontFamily: fonts.display }]}>Sequence</Text>
+          <Text style={[styles.mark, { fontFamily: fonts.semibold }]}>ORD</Text>
+          <Text style={[styles.title, { fontFamily: fonts.display }]}>Ordered</Text>
           <Text style={[styles.tag, { fontFamily: fonts.body }]}>Put the record back in order.</Text>
         </View>
         <View style={styles.copy}>

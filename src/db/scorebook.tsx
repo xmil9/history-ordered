@@ -91,7 +91,7 @@ export function ScorebookProvider({ children }: { children: ReactNode }) {
       <StatusView
         kicker="Scorebook"
         title="Scores could not be opened"
-        body="Sequence keeps a best run on this device with a local database. Nothing was saved, and nothing was sent anywhere."
+        body="Ordered keeps a best run on this device with a local database. Nothing was saved, and nothing was sent anywhere."
         detail={error}
         actionLabel="Try again"
         onAction={() => setAttempt((current) => current + 1)}

@@ -87,7 +87,7 @@ export default function PlayScreen() {
       <StatusView
         kicker="Missing archive"
         title="That archive is not on the shelf"
-        body="Sequence has three archives. This link does not match any of them."
+        body="Ordered has three archives. This link does not match any of them."
         actionLabel="Back to the archives"
         onAction={() => router.replace('/')}
       />

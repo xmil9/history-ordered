@@ -1,6 +1,6 @@
-# Sequence
+# Ordered
 
-Sequence is a phone game about putting history back in order. Choose an archive, arrange a shuffled list of real events, and check how many landed in the right place.
+Ordered is a phone game about putting history back in order. Choose an archive, arrange a shuffled list of real events, and check how many landed in the right place.
 
 Three archives are on the shelf:
 

@@ -7,7 +7,7 @@ export default function NotFoundScreen() {
     <StatusView
       kicker="Missing page"
       title="That page is not in the archive"
-      body="Sequence only has the shelf of archives and the rounds you play from it."
+      body="Ordered only has the shelf of archives and the rounds you play from it."
       actionLabel="Back to the archives"
       onAction={() => router.replace('/')}
     />
