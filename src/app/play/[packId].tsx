@@ -87,10 +87,10 @@ export default function PlayScreen() {
   if (!pack) {
     return (
       <StatusView
-        kicker="Missing archive"
-        title="That archive is not on the shelf"
-        body="Ordered has three archives. This link does not match any of them."
-        actionLabel="Back to the archives"
+        kicker="Missing timeline"
+        title="That timeline is not on the shelf"
+        body="Ordered has three timelines. This link does not match any of them."
+        actionLabel="Back to the timelines"
         onAction={() => router.replace('/')}
       />
     );
@@ -101,7 +101,7 @@ export default function PlayScreen() {
       <StatusView
         kicker="Scorebook"
         title="This run could not be read"
-        body="The archive is still here. Saved progress for it did not load."
+        body="The timeline is still here. Saved progress for it did not load."
         detail={runError}
         actionLabel="Try again"
         onAction={() => setRunAttempt((current) => current + 1)}
@@ -113,7 +113,7 @@ export default function PlayScreen() {
     return (
       <StatusView
         kicker={pack.title}
-        title="Opening this archive"
+        title="Opening this timeline"
         body="Reading saved progress, then shuffling the round."
       />
     );
@@ -185,7 +185,7 @@ export default function PlayScreen() {
         <View style={[styles.mast, { paddingTop: insets.top + 12 }]}>
           <View style={styles.mastRow}>
             <Pressable accessibilityRole="button" onPress={leaveRound} hitSlop={8}>
-              <Text style={[styles.back, { fontFamily: fonts.semibold }]}>Archives</Text>
+              <Text style={[styles.back, { fontFamily: fonts.semibold }]}>Timelines</Text>
             </Pressable>
             {roundIndex > 0 ? (
               <Pressable accessibilityRole="button" onPress={() => setRoundIndex((current) => current - 1)} hitSlop={8}>
@@ -395,7 +395,7 @@ function Summary({
       <ScrollView contentContainerStyle={{ paddingBottom: insets.bottom + 28 }}>
         <View style={[styles.mast, { paddingTop: insets.top + 12 }]}>
           <Pressable accessibilityRole="button" onPress={leaveRound} hitSlop={8}>
-            <Text style={[styles.back, { fontFamily: fonts.semibold }]}>Archives</Text>
+            <Text style={[styles.back, { fontFamily: fonts.semibold }]}>Timelines</Text>
           </Pressable>
           <Text style={[styles.kicker, { fontFamily: fonts.semibold }]}>Full run</Text>
           <Text style={[styles.title, { fontFamily: fonts.display }]}>{pack.title}</Text>

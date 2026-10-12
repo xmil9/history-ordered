@@ -31,7 +31,7 @@ export default function HomeScreen() {
         </View>
         <View style={styles.copy}>
           <Text style={[styles.lead, { fontFamily: fonts.body }]}>
-            Pick an archive. The facts arrive shuffled. Drag them into the order they happened, then check your places.
+            Pick a timeline. The facts arrive shuffled. Drag them into the order they happened, then check your places.
           </Text>
           {packs.map((pack, index) => {
             const saved = best[pack.id];
@@ -59,7 +59,7 @@ export default function HomeScreen() {
             );
           })}
           <Text style={[styles.note, { fontFamily: fonts.body }]}>
-            A best run is the highest share of correct places across a full pass of an archive. Every round has to be
+            A best run is the highest share of correct places across a full pass of a timeline. Every round has to be
             checked. Trying a round again replaces that round’s latest check. Nothing leaves this device.
           </Text>
         </View>
