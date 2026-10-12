@@ -25,7 +25,6 @@ export default function HomeScreen() {
     <PhoneFrame>
       <ScrollView contentContainerStyle={{ paddingBottom: insets.bottom + 32 }}>
         <View style={[styles.mast, { paddingTop: insets.top + 18 }]}>
-          <Text style={[styles.mark, { fontFamily: fonts.semibold }]}>ORD</Text>
           <Text style={[styles.title, { fontFamily: fonts.display }]}>Ordered</Text>
           <Text style={[styles.tag, { fontFamily: fonts.body }]}>Put the record back in order.</Text>
         </View>
@@ -74,16 +73,10 @@ const styles = StyleSheet.create({
     paddingHorizontal: 22,
     paddingBottom: 22,
   },
-  mark: {
-    color: theme.brassSoft,
-    fontSize: 12,
-    letterSpacing: 2,
-  },
   title: {
     color: theme.card,
     fontSize: 42,
     lineHeight: 46,
-    marginTop: 6,
   },
   tag: {
     color: '#d5e4dc',
