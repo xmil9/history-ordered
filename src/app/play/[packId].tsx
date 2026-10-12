@@ -89,7 +89,7 @@ export default function PlayScreen() {
       <StatusView
         kicker="Missing timeline"
         title="That timeline is not on the shelf"
-        body="Ordered has three timelines. This link does not match any of them."
+        body="This link does not match a timeline on the shelf."
         actionLabel="Back to the timelines"
         onAction={() => router.replace('/')}
       />
