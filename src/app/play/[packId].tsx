@@ -11,7 +11,7 @@ import { StatusView } from '@/components/StatusView';
 import { getPack } from '@/content/packs';
 import type { Fact, Pack } from '@/content/types';
 import { clearRun, readRun, recordRound, useScorebook, type RunScores, type Score } from '@/db/scorebook';
-import { formatFraction, grade, shuffleFacts, sortedFacts } from '@/lib/order';
+import { formatFraction, grade, placeHint, shuffleFacts, sortedFacts } from '@/lib/order';
 import { theme } from '@/theme';
 
 function leaveRound() {
@@ -33,6 +33,7 @@ export default function PlayScreen() {
   const [roundIndex, setRoundIndex] = useState(0);
   const [summary, setSummary] = useState(false);
   const [arranged, setArranged] = useState<Fact[]>([]);
+  const [pinned, setPinned] = useState<string[]>([]);
   const [result, setResult] = useState<boolean[] | null>(null);
   const [retry, setRetry] = useState(0);
   const [checking, setChecking] = useState(false);
@@ -76,6 +77,7 @@ export default function PlayScreen() {
   useEffect(() => {
     if (!pack || !booted || summary) return;
     setArranged(shuffleFacts(pack.rounds[roundIndex].facts));
+    setPinned([]);
     setResult(null);
     setNotice(null);
     setSaveError(null);
@@ -143,6 +145,14 @@ export default function PlayScreen() {
   const saved = run[round.id];
   const correctCount = result ? result.filter(Boolean).length : 0;
   const answer = sortedFacts(round.facts);
+  const pinnedSet = new Set(pinned);
+
+  function onHint() {
+    const placed = placeHint(arranged, round.facts, pinned);
+    if (!placed) return;
+    setArranged(placed.arranged);
+    setPinned(placed.pinnedIds);
+  }
 
   async function onCheck() {
     if (!pack || checking || result || arranged.length === 0) return;
@@ -218,15 +228,22 @@ export default function PlayScreen() {
               <ReorderableList
                 items={arranged}
                 enabled={!result}
+                isLocked={(fact) => pinnedSet.has(fact.id)}
                 onReorder={setArranged}
-                toneFor={(_item, index) => {
-                  if (!result) return 'idle';
-                  return result[index] ? 'correct' : 'wrong';
+                toneFor={(fact, index) => {
+                  if (result) return result[index] ? 'correct' : 'wrong';
+                  if (pinnedSet.has(fact.id)) return 'fixed';
+                  return 'idle';
                 }}
                 renderItem={(fact, index) => (
                   <View>
                     <Text style={[styles.factTitle, { fontFamily: fonts.semibold }]}>{fact.title}</Text>
                     <Text style={[styles.factBlurb, { fontFamily: fonts.body }]}>{fact.blurb}</Text>
+                    {!result && pinnedSet.has(fact.id) ? (
+                      <Text style={[styles.verdict, { fontFamily: fonts.medium, color: theme.brass }]}>
+                        Fixed · {fact.dateLabel}
+                      </Text>
+                    ) : null}
                     {result ? (
                       <Text
                         style={[
@@ -306,19 +323,30 @@ export default function PlayScreen() {
               </Pressable>
             </>
           ) : (
-            <Pressable
-              testID="check-order"
-              accessibilityRole="button"
-              disabled={checking || arranged.length === 0}
-              onPress={() => {
-                onCheck().catch(() => undefined);
-              }}
-              style={[styles.primary, checking ? styles.disabled : null]}
-            >
-              <Text style={[styles.primaryLabel, { fontFamily: fonts.semibold }]}>
-                {checking ? 'Saving the score' : 'Check order'}
-              </Text>
-            </Pressable>
+            <>
+              <Pressable
+                testID="hint"
+                accessibilityRole="button"
+                disabled={checking || arranged.length === 0 || pinned.length >= round.facts.length}
+                onPress={onHint}
+                style={[styles.secondary, pinned.length >= round.facts.length ? styles.disabled : null]}
+              >
+                <Text style={[styles.secondaryLabel, { fontFamily: fonts.semibold }]}>Hint</Text>
+              </Pressable>
+              <Pressable
+                testID="check-order"
+                accessibilityRole="button"
+                disabled={checking || arranged.length === 0}
+                onPress={() => {
+                  onCheck().catch(() => undefined);
+                }}
+                style={[styles.primary, checking ? styles.disabled : null]}
+              >
+                <Text style={[styles.primaryLabel, { fontFamily: fonts.semibold }]}>
+                  {checking ? 'Saving the score' : 'Check order'}
+                </Text>
+              </Pressable>
+            </>
           )}
         </View>
       </View>

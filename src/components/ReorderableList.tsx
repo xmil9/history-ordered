@@ -4,18 +4,29 @@ import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 import Animated, { runOnJS, useAnimatedStyle, useSharedValue, withTiming } from 'react-native-reanimated';
 
 import { useFontChoice } from '@/components/fonts';
-import { moveItem } from '@/lib/order';
+import { moveItemSkippingLocked } from '@/lib/order';
 import { theme } from '@/theme';
+
+type Tone = 'idle' | 'correct' | 'wrong' | 'fixed';
 
 type Props<T extends { id: string }> = {
   items: T[];
   enabled: boolean;
-  toneFor?: (item: T, index: number) => 'idle' | 'correct' | 'wrong';
+  isLocked?: (item: T, index: number) => boolean;
+  toneFor?: (item: T, index: number) => Tone;
   onReorder: (next: T[]) => void;
   renderItem: (item: T, index: number) => ReactNode;
 };
 
-export function ReorderableList<T extends { id: string }>({ items, enabled, toneFor, onReorder, renderItem }: Props<T>) {
+export function ReorderableList<T extends { id: string }>({
+  items,
+  enabled,
+  isLocked,
+  toneFor,
+  onReorder,
+  renderItem,
+}: Props<T>) {
+  const locked = isLocked ?? (() => false);
   return (
     <View>
       {items.map((item, index) => (
@@ -23,9 +34,11 @@ export function ReorderableList<T extends { id: string }>({ items, enabled, tone
           key={item.id}
           index={index}
           count={items.length}
-          enabled={enabled}
+          enabled={enabled && !locked(item, index)}
+          earlierIndex={previousMovable(items, index, locked)}
+          laterIndex={nextMovable(items, index, locked)}
           tone={toneFor ? toneFor(item, index) : 'idle'}
-          onMove={(from, to) => onReorder(moveItem(items, from, to))}
+          onMove={(from, to) => onReorder(moveItemSkippingLocked(items, from, to, locked))}
         >
           {renderItem(item, index)}
         </ReorderRow>
@@ -34,10 +47,26 @@ export function ReorderableList<T extends { id: string }>({ items, enabled, tone
   );
 }
 
+function previousMovable<T>(items: T[], index: number, isLocked: (item: T, index: number) => boolean): number {
+  for (let cursor = index - 1; cursor >= 0; cursor -= 1) {
+    if (!isLocked(items[cursor], cursor)) return cursor;
+  }
+  return -1;
+}
+
+function nextMovable<T>(items: T[], index: number, isLocked: (item: T, index: number) => boolean): number {
+  for (let cursor = index + 1; cursor < items.length; cursor += 1) {
+    if (!isLocked(items[cursor], cursor)) return cursor;
+  }
+  return -1;
+}
+
 function ReorderRow({
   index,
   count,
   enabled,
+  earlierIndex,
+  laterIndex,
   tone,
   onMove,
   children,
@@ -45,7 +74,9 @@ function ReorderRow({
   index: number;
   count: number;
   enabled: boolean;
-  tone: 'idle' | 'correct' | 'wrong';
+  earlierIndex: number;
+  laterIndex: number;
+  tone: Tone;
   onMove: (from: number, to: number) => void;
   children: ReactNode;
 }) {
@@ -101,7 +132,8 @@ function ReorderRow({
     zIndex: dragging.value ? 5 : 0,
   }));
 
-  const borderColor = tone === 'correct' ? theme.correct : tone === 'wrong' ? theme.wrong : theme.line;
+  const borderColor =
+    tone === 'correct' ? theme.correct : tone === 'wrong' ? theme.wrong : tone === 'fixed' ? theme.brass : theme.line;
   const background = tone === 'correct' ? theme.correctBg : tone === 'wrong' ? theme.wrongBg : theme.card;
 
   return (
@@ -113,11 +145,13 @@ function ReorderRow({
     >
       <GestureDetector gesture={pan}>
         <View style={styles.dragTarget} accessibilityHint={enabled ? 'Hold and drag to reorder' : undefined}>
-          <View style={styles.grip} accessibilityElementsHidden importantForAccessibility="no-hide-descendants">
-            <View style={styles.gripLine} />
-            <View style={styles.gripLine} />
-            <View style={styles.gripLine} />
-          </View>
+          {enabled ? (
+            <View style={styles.grip} accessibilityElementsHidden importantForAccessibility="no-hide-descendants">
+              <View style={styles.gripLine} />
+              <View style={styles.gripLine} />
+              <View style={styles.gripLine} />
+            </View>
+          ) : null}
           <Text style={[styles.index, { fontFamily: fonts.semibold }]}>{index + 1}</Text>
           <View style={styles.content}>{children}</View>
         </View>
@@ -127,14 +161,14 @@ function ReorderRow({
           <ArrowButton
             label="Move earlier"
             glyph="↑"
-            disabled={index === 0}
-            onPress={() => onMove(index, index - 1)}
+            disabled={earlierIndex < 0}
+            onPress={() => onMove(index, earlierIndex)}
           />
           <ArrowButton
             label="Move later"
             glyph="↓"
-            disabled={index === count - 1}
-            onPress={() => onMove(index, index + 1)}
+            disabled={laterIndex < 0}
+            onPress={() => onMove(index, laterIndex)}
           />
         </View>
       ) : null}
