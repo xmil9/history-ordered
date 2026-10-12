@@ -211,6 +211,10 @@ export default function PlayScreen() {
             <Text style={[styles.hint, { fontFamily: fonts.body }]}>Shuffling this round.</Text>
           ) : (
             <View testID="round-list">
+              <View style={styles.bound}>
+                <Text style={[styles.boundLabel, { fontFamily: fonts.semibold }]}>Earliest</Text>
+                <Text style={[styles.boundDate, { fontFamily: fonts.display }]}>{answer[0].dateLabel}</Text>
+              </View>
               <ReorderableList
                 items={arranged}
                 enabled={!result}
@@ -237,6 +241,12 @@ export default function PlayScreen() {
                   </View>
                 )}
               />
+              {answer.length > 1 ? (
+                <View style={styles.bound}>
+                  <Text style={[styles.boundLabel, { fontFamily: fonts.semibold }]}>Latest</Text>
+                  <Text style={[styles.boundDate, { fontFamily: fonts.display }]}>{answer[answer.length - 1].dateLabel}</Text>
+                </View>
+              ) : null}
             </View>
           )}
           {result ? (
@@ -455,6 +465,28 @@ const styles = StyleSheet.create({
     fontSize: 14,
     lineHeight: 20,
     marginBottom: 12,
+  },
+  bound: {
+    borderColor: theme.line,
+    borderWidth: 1,
+    borderLeftColor: theme.brass,
+    borderLeftWidth: 4,
+    backgroundColor: theme.card,
+    paddingHorizontal: 12,
+    paddingVertical: 10,
+    marginBottom: 8,
+  },
+  boundLabel: {
+    color: theme.brass,
+    fontSize: 12,
+    letterSpacing: 1,
+    textTransform: 'uppercase',
+  },
+  boundDate: {
+    color: theme.ink,
+    fontSize: 20,
+    lineHeight: 24,
+    marginTop: 2,
   },
   savedNote: {
     color: theme.grove,
